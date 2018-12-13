@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { API } from "aws-amplify";
 import { Link } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
-import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
+import { PageHeader, ListGroup, ListGroupItem, Button } from "react-bootstrap";
 import "./Home.css";
+import LoaderButton from "../components/LoaderButton";
 
 export default class Home extends Component {
   constructor(props) {
@@ -34,36 +35,36 @@ export default class Home extends Component {
     return API.get("notes", "/notes");
   }
 
-  renderNotesList(notes) {
-    return [{}].concat(notes).map(
-      (note, i) =>
-        i !== 0
-          ? <LinkContainer
-              key={note.noteId}
-              to={`/notes/${note.noteId}`}
-            >
-              <ListGroupItem header={note.content.trim().split("\n")[0]}>
-                {"Created: " + new Date(note.createdAt).toLocaleString()}
-              </ListGroupItem>
-            </LinkContainer>
-          : <LinkContainer
-              key="new"
-              to="/notes/new"
-            >
-              <ListGroupItem>
-                <h4>
-                  <b>{"\uFF0B"}</b> Create a new note
-                </h4>
-              </ListGroupItem>
-            </LinkContainer>
-    );
-  }
+  // renderNotesList(notes) {
+  //   return [{}].concat(notes).map(
+  //     (note, i) =>
+  //       i !== 0
+  //         ? <LinkContainer
+  //             key={note.noteId}
+  //             to={`/notes/${note.noteId}`}
+  //           >
+  //             <ListGroupItem header={note.content.trim().split("\n")[0]}>
+  //               {"Created: " + new Date(note.createdAt).toLocaleString()}
+  //             </ListGroupItem>
+  //           </LinkContainer>
+  //         : <LinkContainer
+  //             key="new"
+  //             to="/notes/new"
+  //           >
+  //             <ListGroupItem>
+  //               <h4>
+  //                 <b>{"\uFF0B"}</b> Create a new note
+  //               </h4>
+  //             </ListGroupItem>
+  //           </LinkContainer>
+  //   );
+  // }
 
   renderLander() {
     return (
       <div className="lander">
-        <h1>Scratch</h1>
-        <p>A simple note taking app</p>
+        <h1>Chomper Labs</h1>
+        <p>A company for all your chomping needs</p>
         <div>
           <Link to="/login" className="btn btn-info btn-lg">
             Login
@@ -77,14 +78,36 @@ export default class Home extends Component {
   }
 
   renderNotes() {
+    // return (
+    //   <div className="notes">
+    //     <PageHeader>Your Orders</PageHeader>
+    //     <ListGroup>
+    //       {!this.state.isLoading && this.renderNotesList(this.state.notes)}
+    //     </ListGroup>
+    //   </div>
+    // );
     return (
       <div className="notes">
-        <PageHeader>Your Notes</PageHeader>
-        <ListGroup>
-          {!this.state.isLoading && this.renderNotesList(this.state.notes)}
-        </ListGroup>
+        <LoaderButton
+          block
+          bsStyle="primary"
+          bsSize="large"
+          type="submit"
+          isLoading={this.state.isLoading}
+          text="Register Your Kit"
+          loadingText="Registering…"
+        />
+        <br />
+          <div className="well" style={wellStyles}>
+            <Button bsStyle="primary" bsSize="large" block>
+              Block level button
+            </Button>
+            <Button bsSize="large" block>
+              Block level button
+            </Button>
+          </div>
       </div>
-    );
+    )
   }
 
   render() {
@@ -95,3 +118,5 @@ export default class Home extends Component {
     );
   }
 }
+
+    const wellStyles = { maxWidth: 400, margin: '0 auto 10px' };
