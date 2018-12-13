@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import { API } from "aws-amplify";
 import { Link } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
-import { PageHeader, ListGroup, ListGroupItem, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import "./Home.css";
-import LoaderButton from "../components/LoaderButton";
 
 export default class Home extends Component {
   constructor(props) {
@@ -12,53 +10,8 @@ export default class Home extends Component {
 
     this.state = {
       isLoading: true,
-      notes: []
     };
   }
-
-  async componentDidMount() {
-    if (!this.props.isAuthenticated) {
-      return;
-    }
-
-    try {
-      const notes = await this.notes();
-      this.setState({ notes });
-    } catch (e) {
-      alert(e);
-    }
-
-    this.setState({ isLoading: false });
-  }
-
-  notes() {
-    return API.get("notes", "/notes");
-  }
-
-  // renderNotesList(notes) {
-  //   return [{}].concat(notes).map(
-  //     (note, i) =>
-  //       i !== 0
-  //         ? <LinkContainer
-  //             key={note.noteId}
-  //             to={`/notes/${note.noteId}`}
-  //           >
-  //             <ListGroupItem header={note.content.trim().split("\n")[0]}>
-  //               {"Created: " + new Date(note.createdAt).toLocaleString()}
-  //             </ListGroupItem>
-  //           </LinkContainer>
-  //         : <LinkContainer
-  //             key="new"
-  //             to="/notes/new"
-  //           >
-  //             <ListGroupItem>
-  //               <h4>
-  //                 <b>{"\uFF0B"}</b> Create a new note
-  //               </h4>
-  //             </ListGroupItem>
-  //           </LinkContainer>
-  //   );
-  // }
 
   renderLander() {
     return (
@@ -78,32 +31,16 @@ export default class Home extends Component {
   }
 
   renderNotes() {
-    // return (
-    //   <div className="notes">
-    //     <PageHeader>Your Orders</PageHeader>
-    //     <ListGroup>
-    //       {!this.state.isLoading && this.renderNotesList(this.state.notes)}
-    //     </ListGroup>
-    //   </div>
-    // );
     return (
       <div className="notes">
-        <LoaderButton
-          block
-          bsStyle="primary"
-          bsSize="large"
-          type="submit"
-          isLoading={this.state.isLoading}
-          text="Register Your Kit"
-          loadingText="Registering…"
-        />
-        <br />
           <div className="well" style={wellStyles}>
-            <Button bsStyle="primary" bsSize="large" block>
-              Block level button
-            </Button>
+            <LinkContainer to={`/register`}>
+              <Button bsStyle="primary" bsSize="large" block>
+                Register Your Kit
+              </Button>
+            </LinkContainer>
             <Button bsSize="large" block>
-              Block level button
+              My Orders
             </Button>
           </div>
       </div>

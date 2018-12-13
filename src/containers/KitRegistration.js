@@ -5,7 +5,7 @@ import KitRegistrationStep2 from "../components/KitRegistrationStep2";
 import KitRegistrationStep3 from "../components/KitRegistrationStep3";
 import KitRegistrationStep4 from "../components/KitRegistrationStep4";
 import KitRegistrationStep5 from "../components/KitRegistrationStep5";
-import { API } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
 import config from "../config";
 
 export default class KitRegistration extends Component {
@@ -16,7 +16,7 @@ export default class KitRegistration extends Component {
       step: 1,
       isProcessing: false,
       kitCode: "",
-      fullName: "",
+      kitCodeConfirm: "",
       firstName: "",
       lastName: "",
       email: "",
@@ -33,8 +33,13 @@ export default class KitRegistration extends Component {
       productOptions: ["Soft", "Hybrid", "Hard", "Ultra Thin", "Retainer"],
       orderNum: "",
       data: "",
-      orderVerficationAttept: false,
+      orderVerficationAttempt: false,
     };
+  }
+
+  async componentDidMount() {
+    let userInfo = await Auth.currentUserInfo();
+    this.setState({ email: userInfo.attributes.email });
   }
 
   handleFieldChange = event => {
@@ -78,16 +83,17 @@ export default class KitRegistration extends Component {
     let orderNum = details;
     let secret = btoa(config.shipStation.APIKEY);
 
-    //Fetching using Get order
-    //https://www.shipstation.com/developer-api/#/reference/orders/getdelete-order/get-order?console=1
-    fetch(`https://ssapi.shipstation.com/orders/${orderNum}`, {
+    fetch(`https://ssapi.shipstation.com/orders?orderNumber=${orderNum}`, {
       method: "GET",
       mode: "cors",
       headers: {
         "Authorization": `Basic ${secret}`
       }})
       .then( response => response.json())
-      .then( data => this.setState({ data, product: data.items, orderVerficationAttept: true }))
+      .then( d => {
+        let data = d.orders[0];
+        this.setState({ data, product: data.items, orderVerficationAttept: true })
+      })
       .catch( error => {
         this.setState({orderVerficationAttept: true});
         alert("Nope.");
@@ -96,12 +102,13 @@ export default class KitRegistration extends Component {
 
   // POST to lambda function
   persistOrderData = async (storage) => {
-
+    return API.post("notes", "/notes", {
+      body: storage
+    });
   }
 
   // Get customer order verfication from order number
   handleOrderVerficationSubmit = async (event) => {
-    // NOTE: Need to confirm if the Amazon customer has the ShipStation orderId
 
     event.preventDefault();
 
@@ -118,12 +125,21 @@ export default class KitRegistration extends Component {
   handleOrderFinalReviewSubmit = async (event) => {
     event.preventDefault();
 
-    const storage = {};
-
-
     this.setState({ isLoading: true });
 
-    await this.persistOrderData(storage);
+    await this.persistOrderData({
+      orderId: this.state.orderNum,
+      kitCode: this.state.kitCode,
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
+      email: this.state.email,
+      shippingAddressStreet: this.state.shippingAddressStreet,
+      shippingAddressCity: this.state.shippingAddressCity,
+      shippingAddressState: this.state.shippingAddressState,
+      shippingAddressZip: this.state.shippingAddressZip,
+      impression: this.state.impression,
+      product: this.state.product
+    });
 
     this.setState({ isLoading: false });
   }
@@ -131,8 +147,8 @@ export default class KitRegistration extends Component {
   render() {
     const loading = this.state.isProcessing || this.props.loading;
     const { step } = this.state;
-    const { kitCode, fullName, firstName, lastName, email, shippingAddressStreet, shippingAddressCity, shippingAddressState, shippingAddressZip, product, impression, stateOptions, impressionOptions, productOptions, orderNum, data, orderVerficationAttept } = this.state;
-    const values = { kitCode, fullName, firstName, lastName, email, shippingAddressStreet, shippingAddressCity, shippingAddressState, shippingAddressZip, product, impression, stateOptions, impressionOptions, productOptions, orderNum, data, orderVerficationAttept };
+    const { kitCode, kitCodeConfirm, firstName, lastName, email, shippingAddressStreet, shippingAddressCity, shippingAddressState, shippingAddressZip, product, impression, stateOptions, impressionOptions, productOptions, orderNum, data, orderVerficationAttempt } = this.state;
+    const values = { kitCode, kitCodeConfirm, firstName, lastName, email, shippingAddressStreet, shippingAddressCity, shippingAddressState, shippingAddressZip, product, impression, stateOptions, impressionOptions, productOptions, orderNum, data, orderVerficationAttempt };
 
     switch(step) {
       case 1:

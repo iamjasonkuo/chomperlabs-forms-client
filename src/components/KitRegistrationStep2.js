@@ -3,7 +3,6 @@ import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "./LoaderButton";
 
 export default class KitRegistrationStep2 extends Component {
-
   continue = e => {
     e.preventDefault();
     this.props.nextStep();

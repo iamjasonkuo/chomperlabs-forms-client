@@ -41,24 +41,25 @@ export default class KitRegistrationStep1 extends Component {
   render() {
     const { values, handleFieldChange, handleOrderVerficationSubmit } = this.props;
     const filled = values.orderNum.length > 0;
-    // const confirmed = values.data && values.data.orderStatus !== "shipped"; NOTE: This is the correct confirmed variable; use this once renderButtonResponses works. 
+    // const confirmed = values.data && values.data.orderStatus !== "shipped"; NOTE: This is the correct confirmed variable; use this once renderButtonResponses works.
     const confirmed = values.data
+    // TODO: verify that kitcode matches
+    // const kitCodeMatch = this.props.kitCode === this.props.kitCodeConfirm;
 
     return(
       <React.Fragment>
         <h1>Show me the moneyyyyyy</h1>
         <form className="BillingForm" onSubmit={handleOrderVerficationSubmit}>
           <FormGroup bsSize="large" controlId="orderNum">
-            <ControlLabel>Order ID</ControlLabel>
+            <ControlLabel>Amazon Order ID</ControlLabel>
             <FormControl
-              min="0"
-              type="number"
+              type="text"
               value={values.orderNum}
               onChange={handleFieldChange}
               placeholder="Order ID"
             />
           </FormGroup>
-          { values.orderVerficationAttept > 1 ?
+          { values.orderVerficationAttempt > 1 ?
             this.renderButtonResponses(confirmed) :
             <LoaderButton
               block
@@ -81,6 +82,15 @@ export default class KitRegistrationStep1 extends Component {
             value={values.kitCode}
             onChange={handleFieldChange}
             placeholder="KIT CODE"
+          />
+        </FormGroup>
+        <FormGroup bsSize="large" controlId="kitCodeConfirm">
+          <ControlLabel>Confirm Your Kit Code</ControlLabel>
+          <FormControl
+            type="text"
+            value={values.kitCodeConfirm}
+            onChange={handleFieldChange}
+            placeholder="CONFIRM KIT CODE"
           />
         </FormGroup>
         <LoaderButton

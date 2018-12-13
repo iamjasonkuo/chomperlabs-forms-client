@@ -10,7 +10,7 @@ const dev = {
   cognito: {
     REGION: "us-west-2",
     USER_POOL_ID: "us-west-2_9bAs2vg8Y",
-    APP_CLIENT_ID: "29b871c4actcev1a2ethit9f9s",
+    APP_CLIENT_ID: "29b87lc4actcev1a2ethit9f9s",
     IDENTITY_POOL_ID: "us-west-2:d2bf50fd-9e0e-4d63-a950-7304e7c15a7e"
   },
   shipStation: {
